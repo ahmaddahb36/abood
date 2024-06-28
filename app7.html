@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حساب مؤشر كتلة الجسم</title>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            text-align: right;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        h1 {
+            color: #00796b;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #00796b;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 2px solid #00796b;
+            border-radius: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 20px;
+            text-align: center;
+            color: #00796b;
+            animation: slideIn 1.5s;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .result img {
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>حساب مؤشر كتلة الجسم</h1>
+        <div class="input-group">
+            <label for="height">الطول (بالسنتيمتر):</label>
+            <input type="number" id="height" required>
+        </div>
+        <div class="input-group">
+            <label for="weight">الوزن (بالكيلوجرام):</label>
+            <input type="number" id="weight" required>
+        </div>
+        <div class="input-group">
+            <label for="birthdate">تاريخ الميلاد:</label>
+            <input type="date" id="birthdate" required>
+        </div>
+        <div class="input-group">
+            <label for="gender">الجنس:</label>
+            <select id="gender" required>
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+            </select>
+        </div>
+        <button onclick="calculate()">احسب</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function getNormalRange(age, gender) {
+            let ranges = {
+                "0-1": [13, 17],
+                "2-3": [14, 18],
+                "4-24": [15, 18],
+                "25-36": [14, 18],
+                "37-60": [14, 18],
+                "61-72": [14, 18],
+                "73-84": [14, 18],
+                "85-96": [14, 18],
+                "97-120": [14, 18],
+                "121-132": [14, 19],
+                "133-144": [14, 20],
+                "145-156": [14, 21],
+                "157-168": [14, 22],
+                "169-180": [14, 23],
+                "181-192": [15, 24],
+                "193-204": [16, 25],
+                "205-216": [17, 26],
+                "217-228": [18, 27],
+                "229-240": [18, 28],
+                "241-252": [19, 29],
+                "253-264": [19, 30],
+                "265-276": [19, 30],
+                "277-288": [19, 30],
+                "289-300": [19, 30],
+                "301-312": [19, 30],
+            };
+            for (let range in ranges) {
+                let [start, end] = range.split('-').map(Number);
+                if (age >= start && age <= end) {
+                    return ranges[range];
+                }
+            }
+            return null;
+        }
+
+        function calculateAgeInMonths(birthdate) {
+            var birthDate = new Date(birthdate);
+            var today = new Date();
+            var years = today.getFullYear() - birthDate.getFullYear();
+            var months = today.getMonth() - birthDate.getMonth();
+            if (months < 0 || (months === 0 && today.getDate() < birthDate.getDate())) {
+                years--;
+                months += 12;
+            }
+            return years * 12 + months;
+        }
+
+        function calculate() {
+            var height = document.getElementById("height").value;
+            var weight = document.getElementById("weight").value;
+            var birthdate = document.getElementById("birthdate").value;
+            var gender = document.getElementById("gender").value;
+
+            if (height && weight && birthdate && gender) {
+                var bmi = weight / Math.pow(height / 100, 2);
+                var resultText = "مؤشر كتلة الجسم: " + bmi.toFixed(2);
+
+                var ageInMonths = calculateAgeInMonths(birthdate);
+                var normalRange = getNormalRange(ageInMonths, gender);
+
+                var resultDiv = document.getElementById("result");
+                var imageUrl = "";
+                if (gender === "male") {
+                    if (ageInMonths < 24) {
+                        imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/CDC_growth_chart_boys_birth_to_36_mths_cj41c017.pdf/page1-695px-CDC_growth_chart_boys_birth_to_36_mths_cj41c017.pdf.jpg?20131017152616";
+                    } else {
+                        imageUrl = "https://www.researchgate.net/profile/Ahmed-Masoud-4/publication/308341903/figure/fig2/AS:667603269849108@1536180431816/Body-mass-index-for-age-percentiles-for-boys.jpg";
+                    }
+                } else {
+                    if (ageInMonths < 24) {
+                        imageUrl = "https://www.researchgate.net/profile/Ola-Taha-4/publication/334523599/figure/fig1/AS:781727379251200@1563389739112/Figure-1-Birth-to-36-months-girls-length-for-age-and-weight-for-age-percentiles.ppm";
+                    } else {
+                        imageUrl = "https://www.researchgate.net/profile/Ahmed-Masoud-4/publication/308341903/figure/fig3/AS:667603269865477@1536180431857/Body-mass-index-for-age-percentiles-for-girls.jpg";
+                    }
+                }
+
+                if (normalRange) {
+                    if (bmi < normalRange[0]) {
+                        resultText += "<br>الحالة: مؤشر كتلة الجسم أقل من الطبيعي، يجب مراجعة الطبيب.";
+                    } else if (bmi > normalRange[1]) {
+                        resultText += "<br>الحالة: مؤشر كتلة الجسم أعلى من الطبيعي، يجب مراجعة الطبيب.";
+                    } else {
+                        resultText += "<br>الحالة: مؤشر كتلة الجسم طبيعي.";
+                    }
+                } else {
+                    resultText += "<br>الحالة: العمر خارج النطاق المدعوم.";
+                }
+
+                resultDiv.innerHTML = resultText + '<br><img src="' + imageUrl + '" alt="Result Image">';
+            } else {
+                alert("يرجى إدخال جميع القيم");
+            }
+        }
+    </script>
+    <h4 style="text-align: center;">المصدر: مركز مكافحة الأمراض CDC</h4>
+</body>
+</html>
