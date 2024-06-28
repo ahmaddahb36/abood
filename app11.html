@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مذكرات</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f0f7f9; /* لون خلفية جديد */
+    }
+    
+    h1 {
+      text-align: center;
+      background-color: #31c1f5; /* لون خلفية هيدر */
+      color: white; /* لون النص في الهيدر */
+      padding: 20px;
+      border-radius: 5px;
+    }
+    
+    #note-container {
+      margin-top: 20px;
+    }
+    
+    .note {
+      background-color: #e7f3fe; /* لون خلفية الملاحظات */
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* ظل للملاحظات */
+    }
+    
+    .note p {
+      margin: 0;
+    }
+    
+    .note .timestamp {
+      font-size: 12px;
+      color: #888;
+    }
+    
+    #note-input {
+      width: calc(100% - 80px); /* عرض حقل إدخال الملاحظات */
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+    }
+    
+    button {
+      background-color: #3498db; /* لون خلفية الزر */
+      color: white; /* لون النص في الزر */
+      border: none;
+      padding: 10px 20px;
+      margin-left: 10px;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+    
+    button:hover {
+      background-color: #2980b9; /* لون خلفية الزر عند التحويم */
+    }
+    
+  </style>
+</head>
+<body onload="loadNotes()">
+  <h1>كتابة الملاحظات</h1>
+  <input type="text" id="note-input" placeholder="ادخل الملاحظات التي تريدها">
+  <button onclick="saveNote()">حفظ</button>
+  <div id="note-container"></div>
+
+  <script>
+    function saveNote() {
+      var noteInput = document.getElementById("note-input");
+      var noteText = noteInput.value.trim();
+      
+      if (noteText !== "") {
+        var currentDate = new Date();
+        var timestamp = currentDate.toLocaleString();
+        
+        var note = {
+          text: noteText,
+          timestamp: timestamp
+        };
+        
+        var notes = JSON.parse(localStorage.getItem("notes")) || [];
+        notes.push(note);
+        localStorage.setItem("notes", JSON.stringify(notes));
+        
+        loadNotes();
+        
+        noteInput.value = "";
+      }
+    }
+    
+    function loadNotes() {
+      var noteContainer = document.getElementById("note-container");
+      noteContainer.innerHTML = "";
+      
+      var notes = JSON.parse(localStorage.getItem("notes")) || [];
+      
+      for (var i = 0; i < notes.length; i++) {
+        var noteElement = document.createElement("div");
+        noteElement.classList.add("note");
+        
+        var noteP = document.createElement("p");
+        noteP.textContent = notes[i].text;
+        
+        var timestampP = document.createElement("p");
+        timestampP.classList.add("timestamp");
+        timestampP.textContent = notes[i].timestamp;
+        
+        var deleteButton = document.createElement("button");
+        deleteButton.textContent = "حذف";
+        deleteButton.setAttribute("onclick", `deleteNote(${i})`);
+        
+        noteElement.appendChild(noteP);
+        noteElement.appendChild(timestampP);
+        noteElement.appendChild(deleteButton);
+        
+        noteContainer.appendChild(noteElement);
+      }
+    }
+    
+    function deleteNote(index) {
+      var notes = JSON.parse(localStorage.getItem("notes")) || [];
+      notes.splice(index, 1);
+      localStorage.setItem("notes", JSON.stringify(notes));
+      loadNotes(); // Reload notes after deletion
+    }
+  </script>
+  
+</body>
+</html>
